@@ -24,8 +24,13 @@
             </button>
             <ul class="dropdown-menu">
                 <li><a  (click)="onAddToShoppingList()" style="cursor: pointer;">Shopping list</a></li>
-                <li><a href="#">Edit recipe</a></li>
-                <li><a href="#">Delete recipe</a></li>
+                <li><a 
+                    style="cursor: pointer;"
+                    (click)="onEditRecipe()"
+                    >Edit recipe</a></li>
+                <li><a 
+                    style="cursor: pointer;"
+                    >Delete recipe</a></li>
             </ul>
         </div>
     </div>
