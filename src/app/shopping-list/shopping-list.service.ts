@@ -1,10 +1,8 @@
-import { EventEmitter, Injectable } from "@angular/core";
 import { Ingredient } from "../shared/ingredient.model";
-
-@Injectable()
+import { Subject } from "rxjs";
 
 export class ShoppingListService {
-    ingredientsChanged = new EventEmitter<Ingredient[]>();
+    ingredientsChanged = new Subject<Ingredient[]>(); // subject is an observable and an observer at the same time
 
     private ingredients: Ingredient[] = [
         new Ingredient('Apples', 5),
@@ -18,7 +16,7 @@ export class ShoppingListService {
 
     addIngredient(ingredient: Ingredient){
         this.ingredients.push(ingredient);
-        this.ingredientsChanged.emit(this.ingredients.slice());
+        this.ingredientsChanged.next(this.ingredients.slice());  // next because it's a subject instead of emitting an event
     }
 
     addIngredients(ingredients: Ingredient[]){
@@ -35,6 +33,6 @@ export class ShoppingListService {
             }
         }, this);
 
-        this.ingredientsChanged.emit(this.ingredients.slice());
+        this.ingredientsChanged.next(this.ingredients.slice()); 
     }
 }
