@@ -35,5 +35,10 @@ export class RecipeDetailComponent {
   onEditRecipe(){
     this.router.navigate(['edit'], {relativeTo: this.route}); // working fine
     // this.router.navigate(['../', this.id, 'edit', {relativeTo: this.route}]); // working fine also
-}
+  }
+
+  onDeleteRecipe(){
+    this.recipeService.deleteRecipe(this.id);
+    this.router.navigate(['/recipes']);
+  }
 }

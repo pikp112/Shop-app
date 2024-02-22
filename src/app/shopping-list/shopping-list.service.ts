@@ -3,7 +3,7 @@ import { Subject } from "rxjs";
 
 export class ShoppingListService {
     ingredientsChanged = new Subject<Ingredient[]>(); // subject is an observable and an observer at the same time
-
+    startedEditing = new Subject<number>(); 
     private ingredients: Ingredient[] = [
         new Ingredient('Apples', 5),
         new Ingredient('Tomatoes', 10)
@@ -12,6 +12,10 @@ export class ShoppingListService {
     getIngredients() {
         //return this.ingredients; //it's working too, but it's not a copy of the array, it's a reference to the array
         return this.ingredients.slice();
+    }
+
+    getIngredient(index: number){
+        return this.ingredients[index];
     }
 
     addIngredient(ingredient: Ingredient){
@@ -34,5 +38,15 @@ export class ShoppingListService {
         }, this);
 
         this.ingredientsChanged.next(this.ingredients.slice()); 
+    }
+
+    updateIngredient(index: number, newIngredient: Ingredient){
+        this.ingredients[index] = newIngredient;
+        this.ingredientsChanged.next(this.ingredients.slice());
+    }
+
+    deleteIngredient(index: number){
+        this.ingredients.splice(index, 1);
+        this.ingredientsChanged.next(this.ingredients.slice());
     }
 }

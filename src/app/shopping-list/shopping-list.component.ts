@@ -26,4 +26,8 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
   ngOnDestroy(): void {
     this.igChangeSubscription.unsubscribe();  //recommended because you use a Subject, not an EventEmitter (which is automatically unsubscribed)
   }
+
+  onEditItem(index: number) {
+    this.slService.startedEditing.next(index);
+  }
 }
