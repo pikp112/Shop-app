@@ -1,30 +1,27 @@
 import { NgModule } from "@angular/core";
-import { RouterModule, Routes } from "@angular/router";
-import { ShoppingListComponent } from "./shopping-list/shopping-list.component";
-import { ShoppingEditComponent } from "./shopping-list/shopping-edit/shopping-edit.component";
-import { RecipeListComponent } from "./recipes/recipe-list/recipe-list.component";
-import { RecipeItemComponent } from "./recipes/recipe-list/recipe-item/recipe-item.component";
-import { RecipesComponent } from "./recipes/recipes.component";
-import { RecipeStartComponent } from "./recipes/recipe-start/recipe-start.component";
-import { RecipeDetailComponent } from "./recipes/recipe-detail/recipe-detail.component";
-import { RecipeEditComponent } from "./recipes/recipe-edit/recipe-edit.component";
-import { RecipesResolverService } from "./recipes/recipes-resolver.service";
+import { PreloadAllModules, RouterModule, Routes } from "@angular/router";
 
 const appRoutes : Routes = [
     { path: '', redirectTo: '/recipes', pathMatch: 'full'},
-    { path: 'recipes', component: RecipesComponent, children :[
-        { path: '', component: RecipeStartComponent, pathMatch: 'full' },
-        { path: 'new', component: RecipeEditComponent},
-        { path: ':id', component: RecipeDetailComponent, resolve: [RecipesResolverService]}, // resolve will run before the component is loaded and it will fetch the data
-        { path: ':id/edit', component: RecipeEditComponent, resolve: [RecipesResolverService]}
-    ]},
-    { path: 'shopping-list', component: ShoppingListComponent, children: [
-        { path: 'edit', component: ShoppingEditComponent }
-    ] }
+    { 
+        path: 'recipes',     // this lazy loading is to load the recipes module only when the user navigates to the recipes page
+        loadChildren: () => import('./recipes/recipes.module').then(m => m.RecipesModule)
+    },
+    { 
+        path: 'shopping-list', 
+        loadChildren: () => import('./shopping-list/shopping-list.module').then(m => m.ShoppingListModule)
+    },
+    { 
+        path: 'auth', 
+        loadChildren: () => import('./auth/auth.module').then(m => m.AuthModule)
+    }
 ];
 
+//How it's working lazy loading?
+// when the user navigates to the recipes page, the recipes module will be loaded and the recipes-routing.module.ts will be executed
+
 @NgModule({
-    imports: [ RouterModule.forRoot(appRoutes) ],
+    imports: [ RouterModule.forRoot(appRoutes, {preloadingStrategy: PreloadAllModules}) ], // preloadingStrategy: PreloadAllModules is to load all the lazy loading modules in the background
     exports: [ RouterModule ]
 })
 export class AppRoutingModule { }
