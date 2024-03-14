@@ -4,6 +4,8 @@ import { ShoppingListService } from './shopping-list.service';
 import { LoggingService } from '../logging.service';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
+import * as fromShoppingList from './store/shopping-list.reducer';
+import * as ShoppingListActions from './store/shopping-list.actions';
 
 @Component({
   selector: 'app-shopping-list',
@@ -17,11 +19,12 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
 
   constructor(private slService: ShoppingListService, 
               private loggingService: LoggingService,
-              private store: Store<{shoppingList: {ingredients: Ingredient[]}}>) {}
+              private store: Store<fromShoppingList.AppState>) {}
 
   ngOnInit() {
     this.ingredients = this.store.select('shoppingList');  // select is a method that allows you to select a slice of the store
-
+    this.store.select('shoppingList').subscribe(); // this is how you can subscribe to the store
+    
     // this.ingredients = this.slService.getIngredients();
     // this.igChangeSubscription = this.slService.ingredientsChanged // recommended because you use a Subject and should be stored in a property
     // .subscribe(
@@ -35,6 +38,7 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
   }
 
   onEditItem(index: number) {
-    this.slService.startedEditing.next(index);
+    //this.slService.startedEditing.next(index);
+    this.store.dispatch(new ShoppingListActions.StartEdit(index));
   }
 }
