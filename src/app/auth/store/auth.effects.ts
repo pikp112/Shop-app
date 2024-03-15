@@ -55,7 +55,7 @@ const handleError = (errorRes: any) => {
 export class AuthEffects {
     constructor(private actions$: Actions, private http: HttpClient, private router: Router, private authService: AuthService) {}
 
-    authSiguup = createEffect(() => {
+    authSignup = createEffect(() => {
         return this.actions$.pipe(
             ofType(AuthActions.SIGNUP_START),
             switchMap((signupAction: AuthActions.SignupStart) => {
@@ -87,7 +87,7 @@ export class AuthEffects {
             switchMap((authData: AuthActions.LoginStart, ) => {   // allows us to create a new observable, based on the old observable
                 return this.http
                 .post<AuthResposeData>(
-                    'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCg7rw6YUra3OHzVziAjFd42pcZ_9dKKPw',
+                    'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCg7rw6YUra3OHzVziAjFd42pcZ_9dKKPw',
                 {
                     email: authData.payload.email,
                     password: authData.payload.password,
