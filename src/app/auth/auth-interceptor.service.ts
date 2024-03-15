@@ -1,16 +1,21 @@
 import { Injectable } from "@angular/core";
 import { HttpEvent, HttpHandler, HttpInterceptor, HttpRequest } from "@angular/common/http";
-import { Observable, exhaustMap, take } from "rxjs";
+import { Observable, exhaustMap, map, take } from "rxjs";
 import { AuthService } from "./auth.service";
+import { Store } from "@ngrx/store";
+import * as fromApp from '../store/app.reducer';
 
 @Injectable()
 export class AuthInterceptorService implements HttpInterceptor{
-    constructor(private authService: AuthService) { }
+    constructor(private authService: AuthService, private store: Store<fromApp.AppState>) { }
 
     intercept(req: HttpRequest<any>, next: HttpHandler): Observable<HttpEvent<any>> {
         console.log('Request is on its way');
-        return this.authService.user.pipe(
+        return this.store.select('auth').pipe(
             take(1), // take(1) will take the latest user and then automatically unsubscribe
+            map(authState => { // we are transforming the user object into the token
+                return authState.user;
+            }), 
             exhaustMap(user => { // exhaustMap waits for the first observable to complete and then replaces it with the second observable (in this case, the observable returned by the pipe method)
                 if (!user) {
                     return next.handle(req); // if there is no user, we don't want to modify the request

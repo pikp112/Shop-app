@@ -1,11 +1,10 @@
 import { Component, OnInit, OnDestroy } from '@angular/core';
 import { Ingredient } from '../shared/ingredient.model';
-import { ShoppingListService } from './shopping-list.service';
 import { LoggingService } from '../logging.service';
 import { Observable, Subscription } from 'rxjs';
 import { Store } from '@ngrx/store';
-import * as fromShoppingList from './store/shopping-list.reducer';
 import * as ShoppingListActions from './store/shopping-list.actions';
+import * as fromApp from '../store/app.reducer';
 
 @Component({
   selector: 'app-shopping-list',
@@ -17,9 +16,8 @@ export class ShoppingListComponent implements OnInit, OnDestroy {
   ingredients: Observable<{ingredients : Ingredient[]}>; // recommended because you use a Subject and should be stored in a property
   private igChangeSubscription: Subscription;
 
-  constructor(private slService: ShoppingListService, 
-              private loggingService: LoggingService,
-              private store: Store<fromShoppingList.AppState>) {}
+  constructor( private loggingService: LoggingService,
+              private store: Store<fromApp.AppState>) {}
 
   ngOnInit() {
     this.ingredients = this.store.select('shoppingList');  // select is a method that allows you to select a slice of the store

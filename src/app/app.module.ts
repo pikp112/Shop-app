@@ -8,7 +8,9 @@ import { AppRoutingModule } from './app-routing.module';
 import { SharedModule } from './shared/shared.module';
 import { CoreModule } from './core.module';
 import { StoreModule } from '@ngrx/store';
-import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer';
+import * as fromApp from './store/app.reducer';
+import { EffectsModule } from '@ngrx/effects';
+import { AuthEffects } from './auth/store/auth.effects';
 
 @NgModule({
   declarations: [
@@ -21,7 +23,8 @@ import { shoppingListReducer } from './shopping-list/store/shopping-list.reducer
     HttpClientModule, // crucial for using HttpClient
     SharedModule, // not provide services here, only components, directives, and pipes
     CoreModule, // only provide services here
-    StoreModule.forRoot({shoppingList: shoppingListReducer}) // this is the structure of the store (key - value pair, key is the name of the slice of the store, value is the reducer that manages this slice of the store)
+    StoreModule.forRoot(fromApp.appReducer), // this is the structure of the store (key - value pair, key is the name of the slice of the store, value is the reducer that manages this slice of the store)
+    EffectsModule.forRoot([AuthEffects])
   ],
   //providers: [LoggingService],
   bootstrap: [AppComponent]
