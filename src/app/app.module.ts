@@ -11,6 +11,9 @@ import { StoreModule } from '@ngrx/store';
 import * as fromApp from './store/app.reducer';
 import { EffectsModule } from '@ngrx/effects';
 import { AuthEffects } from './auth/store/auth.effects';
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { StoreRouterConnectingModule } from '@ngrx/router-store';
+import { RecipesEffects } from './recipes/store/recipes.effects';
 
 @NgModule({
   declarations: [
@@ -24,7 +27,9 @@ import { AuthEffects } from './auth/store/auth.effects';
     SharedModule, // not provide services here, only components, directives, and pipes
     CoreModule, // only provide services here
     StoreModule.forRoot(fromApp.appReducer), // this is the structure of the store (key - value pair, key is the name of the slice of the store, value is the reducer that manages this slice of the store)
-    EffectsModule.forRoot([AuthEffects])
+    EffectsModule.forRoot([AuthEffects, RecipesEffects]),
+    StoreDevtoolsModule.instrument({logOnly: true}), // this is for the redux devtools (you can sed logOnly to environment.production)
+    StoreRouterConnectingModule.forRoot() // this is for the router store
   ],
   //providers: [LoggingService],
   bootstrap: [AppComponent]
