@@ -60,7 +60,7 @@ export class AuthService implements OnInit{
 
     setLogoutTimer(expirationDuration: number){ // the goal it's to logout the user after the token expires
         this.tokenExpirationTimer = setTimeout(() => {
-            this.store.dispatch(new AuthActions.Logout());
+            this.store.dispatch(AuthActions.logout());
         }, expirationDuration);
     }
 

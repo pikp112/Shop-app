@@ -11,9 +11,9 @@ import * as fromApp from '../../store/app.reducer';
 export class RecipesEffects {
     constructor(private actions$ : Actions, private http: HttpClient, private store: Store<fromApp.AppState>){}
 
-    fetchRecipes$ = createEffect(() => 
+    fetchRecipes$ = createEffect(() =>
     this.actions$.pipe(
-        ofType(RecipesActions.FETCH_RECIPES),
+      ofType(RecipesActions.fetchRecipes),
         switchMap(() => 
             this.http.get<Recipe[]>(
                 'https://ng-recipe-book-c2ae2-default-rtdb.firebaseio.com/recipes.json'
@@ -25,12 +25,13 @@ export class RecipesEffects {
                 ingredients: recipe.ingredients ? recipe.ingredients : []
             }))
         ),
-        map(recipes => new RecipesActions.SetRecipes(recipes))
-    )
-    );
+        map(recipes => RecipesActions.setRecipes({recipes})
+        )
+    ));
 
-    storeRecipes$ = createEffect(() => this.actions$.pipe(
-        ofType(RecipesActions.STORE_RECIPES),
+    storeRecipes$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(RecipesActions.storeRecipes),
         withLatestFrom(this.store.select('recipes')),
         switchMap(([actionData, recipesState]) => { // this is a destructuring array (and means that we are only interested in the second element of the array)
             return this.http.put(

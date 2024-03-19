@@ -29,12 +29,12 @@ export class HeaderComponent implements OnInit, OnDestroy{
 
     onSaveData(){
         //this.dataStorageService.storeRecipes();
-        this.store.dispatch(new RecipesActions.StoreRecipes());
+        this.store.dispatch( RecipesActions.storeRecipes());
     }
 
     onFetchData(){
         //this.dataStorageService.fetchRecipes().subscribe();
-        this.store.dispatch(new RecipesActions.FetchRecipes());
+        this.store.dispatch( RecipesActions.fetchRecipes());
     }
 
     ngOnDestroy(): void {
@@ -42,6 +42,6 @@ export class HeaderComponent implements OnInit, OnDestroy{
     }
     onLogout() {
         //this.authService.logout();
-        this.store.dispatch(new AuthActions.Logout());
+        this.store.dispatch( AuthActions.logout());
     }
 }

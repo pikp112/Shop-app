@@ -9,7 +9,7 @@ import { Actions, ofType } from "@ngrx/effects";
 import { map, of, switchMap, take } from "rxjs";
 
 @Injectable({providedIn: 'root'})
-export class RecipesResolverService implements Resolve<Recipe[]>{ //resolve it's a generic type that will resolve the type of data that we are fetching
+export class RecipesResolverService implements Resolve<{recipes: Recipe[]}>{ //resolve it's a generic type that will resolve the type of data that we are fetching
     constructor(private recipeService: RecipeService,
                 private store: Store<fromApp.AppState>,
                 private actions$: Actions){}
@@ -24,11 +24,11 @@ export class RecipesResolverService implements Resolve<Recipe[]>{ //resolve it's
             }),
             switchMap(recipes => {
                 if(recipes.length === 0){
-                    this.store.dispatch(new RecipesActions.FetchRecipes());
-                    return this.actions$.pipe(ofType(RecipesActions.SET_RECIPES), 
+                    this.store.dispatch( RecipesActions.fetchRecipes());
+                    return this.actions$.pipe(ofType(RecipesActions.setRecipes), 
                         take(1));
                 } else {
-                    return of(recipes);
+                    return of({recipes});
                 }
             }));
     }

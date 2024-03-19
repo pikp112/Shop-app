@@ -29,7 +29,7 @@ const handleAuthentication = (
   const expirationDate = new Date(new Date().getTime() + expiresIn * 1000);
   const user = new User(email, userId, token, expirationDate);
   localStorage.setItem('userData', JSON.stringify(user));
-  return new AuthActions.AuthenticateSuccess({
+  return AuthActions.authenticateSuccess({
     email: email,
     userId: userId,
     token: token,
@@ -48,7 +48,7 @@ const handleAuthentication = (
 const handleError = (errorRes: any) => {
   let errorMessage = 'An unknown error occurred!';
   if (!errorRes.error || !errorRes.error.error) {
-    return of(new AuthActions.AuthenticateFail(errorMessage));
+    return of ( AuthActions.authenticateFail({errorMessage}));
     // Alternative syntax:
     // return of(AuthActions.authenticateFail({ error: errorMessage }));
   }
@@ -63,7 +63,7 @@ const handleError = (errorRes: any) => {
       errorMessage = 'This password is not correct.';
       break;
   }
-  return of(new AuthActions.AuthenticateFail(errorMessage));
+  return of( AuthActions.authenticateFail({errorMessage}));
   // Alternative syntax:
   // return of(AuthActions.authenticateFail({ error: errorMessage }));
 };
@@ -77,20 +77,18 @@ export class AuthEffects {
     private authService: AuthService
   ) {}
 
-  authSignup = createEffect(() =>
-    this.actions$.pipe(
-      ofType(AuthActions.SIGNUP_START),
-      // Alternative syntax:
-      // ofType(AuthActions.signupStart),
-      switchMap((signupAction: AuthActions.SignupStart) => {
+  authSignup$ = createEffect(() =>
+  this.actions$.pipe(
+    ofType(AuthActions.signupStart),
+    switchMap(action => {
       // Alternative syntax:
       // switchMap((signupAction) => {
         return this.http
           .post<AuthResponseData>(
             'https://identitytoolkit.googleapis.com/v1/accounts:signUp?key=AIzaSyCg7rw6YUra3OHzVziAjFd42pcZ_9dKKPw',
             {
-              email: signupAction.payload.email,
-              password: signupAction.payload.password,
+              email: action.email,
+              password: action.password,
               returnSecureToken: true,
             }
             // Alternative syntax:
@@ -120,20 +118,18 @@ export class AuthEffects {
     )
   );
 
-  authLogin = createEffect(() =>
+  authLogin$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.LOGIN_START),
-      // Alternative syntax:
-      // ofType(AuthActions.loginStart),
-      switchMap((authData: AuthActions.LoginStart) => {
+      ofType(AuthActions.loginStart),
+      switchMap(action => {
       // Alternative syntax:
       // switchMap((authData) => {
         return this.http
           .post<AuthResponseData>(
 			'https://identitytoolkit.googleapis.com/v1/accounts:signInWithPassword?key=AIzaSyCg7rw6YUra3OHzVziAjFd42pcZ_9dKKPw',
             {
-              email: authData.payload.email,
-              password: authData.payload.password,
+              email: action.email,
+              password: action.password,
               returnSecureToken: true,
             }
             // Alternative syntax:
@@ -163,24 +159,17 @@ export class AuthEffects {
     )
   );
 
-  authRedirect = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AuthActions.AUTHENTICATE_SUCCESS),
-        // Alternative syntax:
-        // ofType(AuthActions.authenticateSuccess),
-        tap((authSuccessAction: AuthActions.AuthenticateSuccess) => {
-          if (authSuccessAction.payload.redirect) {
-            this.router.navigate(['/']);
-          }
-        })
-      ),
-    { dispatch: false }
+  authRedirect$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.authenticateSuccess),
+      tap(action =>  
+        action.redirect && this.router.navigate(['/']))
+    ), { dispatch: false }
   );
 
-  autoLogin = createEffect(() =>
+  autoLogin$ = createEffect(() =>
     this.actions$.pipe(
-      ofType(AuthActions.AUTO_LOGIN),
+    ofType(AuthActions.autoLogin),
       // Alternative syntax:
       // ofType(AuthActions.autoLogin),
       map(() => {
@@ -207,7 +196,7 @@ export class AuthEffects {
             new Date(userData._tokenExpirationDate).getTime() -
             new Date().getTime();
           this.authService.setLogoutTimer(expirationDuration);
-          return new AuthActions.AuthenticateSuccess({
+          return AuthActions.authenticateSuccess({
             email: loadedUser.email,
             userId: loadedUser.id,
             token: loadedUser.token,
@@ -233,10 +222,9 @@ export class AuthEffects {
     )
   );
 
-  authLogout = createEffect(
-    () =>
-      this.actions$.pipe(
-        ofType(AuthActions.LOGOUT),
+  authLogout$ = createEffect(() =>
+    this.actions$.pipe(
+      ofType(AuthActions.logout),
         // Alternative syntax:
         // ofType(AuthActions.logout),
         tap(() => {
@@ -247,7 +235,6 @@ export class AuthEffects {
       ),
     { dispatch: false }
   );
-
 
 }
 
